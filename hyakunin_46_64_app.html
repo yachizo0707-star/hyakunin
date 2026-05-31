@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>百人一首 46〜64 暗記アプリ</title>
+<style>
+body{font-family:-apple-system,BlinkMacSystemFont,sans-serif;max-width:800px;margin:20px auto;padding:12px}
+button{font-size:18px;padding:10px 14px;margin:6px;border-radius:10px}
+.card{border:1px solid #ccc;padding:16px;border-radius:12px;margin-top:12px}
+.choice{display:block;width:100%;text-align:left}
+.result{font-weight:bold;margin-top:10px}
+</style>
+</head>
+<body>
+<h2>百人一首 46〜64 暗記アプリ</h2>
+<button onclick="newQuestion()">次の問題</button>
+<div class="card">
+<div id="type"></div>
+<h3 id="question"></h3>
+<div id="choices"></div>
+<div id="answerArea"></div>
+<div id="result" class="result"></div>
+</div>
+
+<script>
+const poems=[
+{n:46,kami:"ゆらのとを わたるふなびと かぢをたえ",simo:"ゆくへもしらぬ こひのみちかな"},
+{n:47,kami:"やへむぐら しげれるやどの さびしきに",simo:"ひとこそみえね あきはきにけり"},
+{n:48,kami:"かぜをいたみ いはうつなみの おのれのみ",simo:"くだけてものを おもふころかな"},
+{n:49,kami:"みかきもり ゑじのたくひの よるはもえ",simo:"ひるはきえつつ ものをこそおもへ"},
+{n:50,kami:"きみがため をしからざりし いのちさへ",simo:"ながくもがなと おもひけるかな"},
+{n:51,kami:"かくとだに えやはいぶきの さしもぐさ",simo:"さしもしらじな もゆるおもひを"},
+{n:52,kami:"あけぬれば くるるものとは しりながら",simo:"なほうらめしき あさぼらけかな"},
+{n:53,kami:"なげきつつ ひとりぬるよの あくるまは",simo:"いかにひさしき ものとかはしる"},
+{n:54,kami:"わすれじの ゆくすゑまでは かたければ",simo:"けふをかぎりの いのちともがな"},
+{n:55,kami:"たきのおとは たえてひさしく なりぬれど",simo:"なこそながれて なほきこえけれ"},
+{n:56,kami:"あらざらむ このよのほかの おもひでに",simo:"いまひとたびの あふこともがな"},
+{n:57,kami:"めぐりあひて みしやそれとも わかぬまに",simo:"くもがくれにし よはのつきかな"},
+{n:58,kami:"ありまやま ゐなのささはら かぜふけば",simo:"いでそよひとを わすれやはする"},
+{n:59,kami:"やすらはで ねなましものを さよふけて",simo:"かたぶくまでの つきをみしかな"},
+{n:60,kami:"おほえやま いくののみちの とほければ",simo:"まだふみもみず あまのはしだて"},
+{n:61,kami:"いにしへの ならのみやこの やへざくら",simo:"けふここのへに にほひぬるかな"},
+{n:62,kami:"よをこめて とりのそらねは はかるとも",simo:"よにあふさかの せきはゆるさじ"},
+{n:63,kami:"いまはただ おもひたえなむ とばかりを",simo:"ひとづてならで いふよしもがな"},
+{n:64,kami:"あさぼらけ うぢのかはぎり たえだえに",simo:"あらはれわたる せぜのあじろぎ"}
+];
+
+function shuffle(a){return [...a].sort(()=>Math.random()-0.5);}
+
+function newQuestion(){
+ document.getElementById("result").textContent="";
+ const p=poems[Math.floor(Math.random()*poems.length)];
+ const mode=Math.random()<0.5?"choice":"fill";
+ document.getElementById("choices").innerHTML="";
+ document.getElementById("answerArea").innerHTML="";
+ if(mode==="choice"){
+   document.getElementById("type").textContent="上の句→下の句 選択問題";
+   document.getElementById("question").textContent=`${p.n}番: ${p.kami}`;
+   const options=shuffle([p.simo,...shuffle(poems.filter(x=>x.n!==p.n)).slice(0,3).map(x=>x.simo)]);
+   options.forEach(o=>{
+     const b=document.createElement("button");
+     b.className="choice";
+     b.textContent=o;
+     b.onclick=()=>{
+       document.getElementById("result").textContent=(o===p.simo?"⭕ 正解":"❌ 不正解")+"　正解: "+p.simo;
+     };
+     document.getElementById("choices").appendChild(b);
+   });
+ }else{
+   document.getElementById("type").textContent="語句穴埋め問題";
+   const words=p.simo.split(" ");
+   const idx=Math.floor(Math.random()*words.length);
+   const hidden=words[idx];
+   words[idx]="_____";
+   document.getElementById("question").textContent=`${p.n}番: ${p.kami} ／ ${words.join(" ")}`;
+   document.getElementById("answerArea").innerHTML=`
+     <input id="ans" style="font-size:18px;padding:6px">
+     <button onclick="checkFill('${hidden}','${p.simo}')">回答</button>`;
+ }
+}
+function checkFill(correct,full){
+ const v=document.getElementById("ans").value.trim();
+ document.getElementById("result").textContent=(v===correct?"⭕ 正解":"❌ 不正解")+"　答え: "+correct+" ／ "+full;
+}
+newQuestion();
+</script>
+</body>
+</html>
